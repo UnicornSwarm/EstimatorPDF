@@ -16,13 +16,15 @@ class DocumentManager: ObservableObject {
     
     // MARK: - Properties
     /// Selected document type
-    @Published var selectedDocType: DocTypeEnum? = nil
+    @Published var selectedDocType: DocTypeEnum?
     
     /// Selected document type (default: .estimate)
     @Published var selectedDocument: DocumentType = .estimate(EstimateModel.generateMock())
 
     /// Selected submenu document type
     @Published var selectedSubType: DocumentType?
+    
+    @Published var currentDocument: BaseDocument?
     
     // ✅ Computed Properties for Active Document Models
     var currentEstimate: EstimateModel? {

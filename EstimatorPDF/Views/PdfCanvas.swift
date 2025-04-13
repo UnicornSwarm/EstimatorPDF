@@ -9,7 +9,8 @@ struct PdfCanvas: View {
     var body: some View {
         ZStack {
             // Attempt to load PDF data (mocked for now from finalNotes)
-            if let pdfData = generatePDFData(from: docManager.currentEstimate!)
+            if let pdfData = generatePDFData(from: docManager.currentDocument!)
+
             {
                 PDFPreviewView(pdfData: pdfData)
                     .ignoresSafeArea()
@@ -40,9 +41,17 @@ struct PdfCanvas: View {
                         .font(.headline)
                         .padding()
 
-                    List(docManager.getMainMenuOptions(), id: \.self) { doc in
-                        Text(doc)
-                        
+                    List(docManager.getMainMenuOptions(), id: \.self) { docOption in
+                        Text(docOption)
+                            .onTapGesture {
+                                // Assuming the docOption is something like "Estimate"
+                                if docOption.lowercased().contains("estimate") {
+                                    docManager.currentDocument = EstimateModel.generateMock()
+                                } else if docOption.lowercased().contains("invoice") {
+                                    docManager.currentDocument = InvoiceModel.generateMock() as! any BaseDocument
+                                }
+                                showDocList = false
+                            }
                     }
                     .frame(maxHeight: 300)
                     .listStyle(PlainListStyle())

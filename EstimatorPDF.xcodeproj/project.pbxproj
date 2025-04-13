@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		19AC562D2DAE07CB00E33A9A /* EstimatorPDF.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EstimatorPDF.xcodeproj; sourceTree = "<group>"; };
 		19DC5E132D26F79300C13FD4 /* EstimatorPDF.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EstimatorPDF.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -29,6 +30,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		19AC562F2DAE07CB00E33A9A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		19DC5E0A2D26F79300C13FD4 = {
 			isa = PBXGroup;
 			children = (
@@ -97,6 +105,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 19DC5E142D26F79300C13FD4 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 19AC562F2DAE07CB00E33A9A /* Products */;
+					ProjectRef = 19AC562D2DAE07CB00E33A9A /* EstimatorPDF.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				19DC5E122D26F79300C13FD4 /* EstimatorPDF */,
@@ -247,7 +261,8 @@
 				CODE_SIGN_ENTITLEMENTS = EstimatorPDF/EstimatorPDF.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"EstimatorPDF/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 82WWZ6JKSJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
@@ -285,7 +300,8 @@
 				CODE_SIGN_ENTITLEMENTS = EstimatorPDF/EstimatorPDF.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"EstimatorPDF/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 82WWZ6JKSJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";

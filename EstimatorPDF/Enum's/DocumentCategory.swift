@@ -9,11 +9,11 @@ import Foundation
 import SwiftUI
 
 // MARK: - Document Model Protocol
-protocol DocumentModel {
-    var title: String { get }
-    var sections: [DocumentSection] { get } // Header, Body, Footer
+protocol DocumentModel: BaseDocument {
+    var sections: [DocumentSection] { get }
     func generateMockData() -> Self
 }
+
 
 // MARK: - Document Type Enum
 enum DocumentType {
@@ -26,10 +26,16 @@ enum DocumentType {
 }
 
 // MARK: - Document Section Struct
+enum WidgetData {
+    case header([HeaderWidget])
+    case body([BodyWidget])
+    case footer([FooterWidget])
+}
+
 struct DocumentSection {
     let name: String
-    let data: Any // Could be dynamic content like strings or custom structs
-    let layout: SectionLayout // Layout definition for drag-and-drop UI
+    let layout: SectionLayout
+    let widgets: WidgetData
 }
 
 enum SectionLayout {
@@ -38,8 +44,28 @@ enum SectionLayout {
     case footer
 }
 
+struct PDFMetaData {
+    let title: String
+    let author: String
+    let subject: String
+    let keywords: String
+    let creationDate: Date?
+
+    var asDictionary: [String: Any] {
+        return [
+            kCGPDFContextTitle as String: title,
+            kCGPDFContextAuthor as String: author,
+            kCGPDFContextSubject as String: subject,
+            kCGPDFContextKeywords as String: keywords
+            // `creationDate` isn't usually supported here but could be embedded elsewhere if needed
+        ]
+    }
+}
+
+
+
 // MARK: - Main Document Types Enum
-enum DocTypeEnum: String, CaseIterable {
+enum DocTypeEnum: String, CaseIterable { //Name change? 
     case estimate, invoice, image, financial, legal, personalLegal
 
     func loadDocuments() -> [String] {

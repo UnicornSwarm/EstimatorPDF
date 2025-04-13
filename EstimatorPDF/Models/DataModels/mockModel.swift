@@ -67,38 +67,7 @@ let mockEstimate = EstimateModel(
     items: mockItems,
     finalNotes: "Thank you for your business!",
     additionalDetails: "This is additional estimate information.",
-    sections: [
-        DocumentSection(
-            name: "Header",
-            data: DocumentHeaderData(
-                title: "Estimate",
-                referenceNumber: UUID().uuidString,
-                date: "\(Date())",
-                businessInfoHeader: mockBusiness,
-                customerInfoHeader: mockCustomer,
-                estimate: EstimateModel(
-                    title: "Empty Estimate",
-                    id: UUID(),
-                    date: Date(),
-                    items: [],
-                    finalNotes: nil,
-                    additionalDetails: nil,
-                    sections: []
-                ) // <-- Placeholder instead of nil
-            ),
-            layout: .header
-        ),
-        DocumentSection(
-            name: "Body",
-            data: DocumentBodyData(items: mockItems, additionalDetails: "Notes on ordered/repaired items."),
-            layout: .body
-        ),
-        DocumentSection(
-            name: "Footer",
-            data: DocumentFooterData(finalNotes: "All parts are subject to availability.", disclaimer: "Warranty void if misused."),
-            layout: .footer
-        )
-    ]
+    sections: []
 )
 
 let mockInvoice = InvoiceModel(
@@ -110,44 +79,7 @@ let mockInvoice = InvoiceModel(
     dueDate: Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date(),
     paymentTerms: "Please pay within 30 days.",
     notes: "Lovely customer!",
-    sections: [
-        DocumentSection(
-            name: "Header",
-            data: DocumentHeaderData(
-                title: "Invoice",
-                referenceNumber: UUID().uuidString.prefix(10).description,
-                date: "\(Date())",
-                businessInfoHeader: mockBusiness,
-                customerInfoHeader: mockCustomer,
-                estimate: EstimateModel( // 🧩 Placeholder if your header needs it
-                    title: "Empty Estimate",
-                    id: UUID(),
-                    date: Date(),
-                    items: [],
-                    finalNotes: nil,
-                    additionalDetails: nil,
-                    sections: []
-                )
-            ),
-            layout: .header
-        ),
-        DocumentSection(
-            name: "Body",
-            data: DocumentBodyData(
-                items: mockItems,
-                additionalDetails: "Invoice details for your records."
-            ),
-            layout: .body
-        ),
-        DocumentSection(
-            name: "Footer",
-            data: DocumentFooterData(
-                finalNotes: "Thank you for your payment.",
-                disclaimer: "Late payments may be subject to fees."
-            ),
-            layout: .footer
-        )
-    ]
+    sections: []
 )
 
 
