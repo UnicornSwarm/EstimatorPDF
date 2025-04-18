@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		190EBF572DB1673400EFB4C1 /* EstimatorPDF.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EstimatorPDF.xcodeproj; sourceTree = "<group>"; };
 		19AC562D2DAE07CB00E33A9A /* EstimatorPDF.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = EstimatorPDF.xcodeproj; sourceTree = "<group>"; };
 		19DC5E132D26F79300C13FD4 /* EstimatorPDF.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EstimatorPDF.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -30,6 +31,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		190EBF582DB1673400EFB4C1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		19AC562F2DAE07CB00E33A9A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -106,6 +114,10 @@
 			productRefGroup = 19DC5E142D26F79300C13FD4 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = 190EBF582DB1673400EFB4C1 /* Products */;
+					ProjectRef = 190EBF572DB1673400EFB4C1 /* EstimatorPDF.xcodeproj */;
+				},
 				{
 					ProductGroup = 19AC562F2DAE07CB00E33A9A /* Products */;
 					ProjectRef = 19AC562D2DAE07CB00E33A9A /* EstimatorPDF.xcodeproj */;
