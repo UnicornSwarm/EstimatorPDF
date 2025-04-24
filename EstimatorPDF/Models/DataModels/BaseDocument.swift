@@ -18,5 +18,7 @@ protocol BaseDocument {
     var tax: Double { get }
     var total: Double { get }
     
+    var docType: DocTypeEnum { get }
+    
     func loadDocuments() -> [String] // Can be overridden by specific document types
 }

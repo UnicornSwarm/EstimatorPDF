@@ -16,40 +16,19 @@ class DocumentManager: ObservableObject {
     
     // MARK: - Properties
     /// Selected document type
-    @Published var selectedDocType: DocTypeEnum?
+    @Published var documentCatagory: DocTypeEnum?
     
     /// Selected document type (default: .estimate)
-    @Published var selectedDocument: DocumentType = .estimate(EstimateModel.generateMock())
-
+    @Published var selectedDocument: DocTypeEnum?
     /// Selected submenu document type
-    @Published var selectedSubType: DocumentType?
+    @Published var selectedSubType: DocTypeEnum?
     
-    @Published var currentDocument: BaseDocument?
-    
-    // ✅ Computed Properties for Active Document Models
-    var currentEstimate: EstimateModel? {
-        if case .estimate(let model) = selectedDocument {
-            return model
-        }
-        return nil
-    }
+    ///Current Doc showing
+    @Published var currentDocument: DocumentModel?
+    ///Current Showing in subCatagory
+    @Published var selectedImageCategory: ImageCategory? = nil
 
-    var currentInvoice: InvoiceModel? {
-        if case .invoice(let model) = selectedDocument {
-            return model
-        }
-        return nil
-    }
     
-    // Init, other functions, etc.
-    init(estimate: EstimateModel = EstimateModel.generateMock()) {
-        self.selectedDocument = .estimate(estimate)
-    }
-    
-    //MARK: - default document type ESTIMATE TO START
-    var effectiveDocType: DocTypeEnum {
-        selectedDocType ?? .estimate
-    }
     
     // MARK: - Derived Properties
     
@@ -63,7 +42,25 @@ class DocumentManager: ObservableObject {
     /// print(docManager.selectedDocTypeName) // Output: "Invoice"
     /// ```
     var selectedDocTypeName: String {
-        return selectedDocType?.rawValue.capitalized ?? DocTypeEnum.estimate.rawValue.capitalized
+        return documentCatagory?.rawValue.capitalized ?? DocTypeEnum.estimate.rawValue.capitalized
+    }
+    
+    func selectDocument(named name: String) {
+        let lowercasedName = name.lowercased()
+        if lowercasedName.contains("estimate") {
+            self.currentDocument = EstimateModel.generateMockData()
+        } else if lowercasedName.contains("invoice") {
+            self.currentDocument = InvoiceModel.generateMockData()
+        } else if lowercasedName.contains("image") {
+            // Handle image documents
+        } else if lowercasedName.contains("financial") {
+            // Handle financial documents
+        } else if lowercasedName.contains("legal") {
+            // Handle legal documents
+        } else if lowercasedName.contains("personallegal") {
+            // Handle personal legal documents
+        }
+        // Handle more types cleanly later
     }
     
     // MARK: - Menu Functions
@@ -78,7 +75,7 @@ class DocumentManager: ObservableObject {
     /// print(docManager.getDocMenuOpt()) // Output: ["Invoice1.pdf", "Invoice2.pdf"]
     /// ```
     func getDocMenuOpt() -> [String] {
-        guard let docType = selectedDocType else {
+        guard let docType = documentCatagory else {
             return DocTypeEnum.estimate.loadDocuments()
         }
         return docType.loadDocuments()
@@ -108,9 +105,24 @@ class DocumentManager: ObservableObject {
     /// print(docManager.getSubMenuOptions()) // Output: ["Invoice1.pdf", "Invoice2.pdf"]
     /// ```
     func getSubMenuOptions() -> [String] {
-        guard let docType = selectedDocType else { return [] }
-        return docType.loadDocuments()
+        guard let docType = documentCatagory else { return [] }
+        
+        if docType.hasSubcategories {
+            // Return the subcategories
+            return ImageCategory.allCases.map { $0.rawValue.capitalized }
+        } else {
+            // Return normal documents
+            return docType.loadDocuments()
+        }
     }
+    
+    ///method to get submenu items for list
+    func getImageDocuments() -> [String] {
+        guard let category = selectedImageCategory else { return [] }
+        return category.loadDocuments()
+    }
+    
+
     
     
     //MARK: - Reset to the main menu defaults
@@ -125,23 +137,29 @@ class DocumentManager: ObservableObject {
     /// ```
     func resetToMainMenu() {
         selectedSubType = nil
-        selectedDocType = nil
+        documentCatagory = nil
     }
     
     
     
     //MARK: - Update methods
-    // Add methods to update the Estimate
-    func updateEstimate(newEstimate: EstimateModel) {
-        self.selectedDocument = .estimate(newEstimate)
-    }
-
-    // Add methods to update the Default Document
-    func updateDefaultDocType(to newDefault: DocTypeEnum) {
-        DocumentDefaults.shared.setDefaultDocType(newDefault as! BaseDocument)
-        print("Default document type updated to: \(newDefault.rawValue)")
-    }
-    
+    /// ✅ Save PDF Data to File
+       func savePDFData(data: Data) -> URL? {
+           let fileManager = FileManager.default
+           let docsDir = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+           let timestamp = Int(Date().timeIntervalSince1970)
+           let pdfURL = docsDir.appendingPathComponent("Export_\(timestamp).pdf")
+           
+           do {
+               try data.write(to: pdfURL)
+               return pdfURL
+           } catch {
+               print("❌ Error saving PDF: \(error)")
+               return nil
+           }
+       }
+   }
+//I have like 3 save funcs????
     
     //MARK: - Shared PDF files
     func sharePDF(data: Data, document: BaseDocument) {
@@ -164,4 +182,4 @@ class DocumentManager: ObservableObject {
             print("Failed to write PDF to temporary file: \(error.localizedDescription)")
         }
     }
-}
+

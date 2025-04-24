@@ -10,137 +10,139 @@ import SwiftUI
 
 // MARK: - Document Model Protocol
 protocol DocumentModel: BaseDocument {
-    var sections: [DocumentSection] { get }
-    func generateMockData() -> Self
+    
+    var id: UUID { get set }
+    var title: String { get set }
+    var date: Date { get set }
+    var sections: [DocumentSection] { get set }
+    var docType: DocTypeEnum { get }
+
+    func loadDocuments() -> [String]
+    static func generateMockData() -> Self
 }
 
-
-// MARK: - Document Type Enum
-enum DocumentType {
-    case estimate(EstimateModel)
-    case invoice(InvoiceModel)
-    case image(ImageModel)
-    case financial(FinancialType)
-    case legal(LegalType)
-    case personalLegal(LegalPersonalType)
-}
-
-// MARK: - Document Section Struct
-enum WidgetData {
-    case header([HeaderWidget])
-    case body([BodyWidget])
-    case footer([FooterWidget])
-}
-
-struct DocumentSection {
-    let name: String
-    let layout: SectionLayout
-    let widgets: WidgetData
-}
-
-enum SectionLayout {
-    case header
-    case body
-    case footer
-}
-
-struct PDFMetaData {
-    let title: String
-    let author: String
-    let subject: String
-    let keywords: String
-    let creationDate: Date?
-
-    var asDictionary: [String: Any] {
-        return [
-            kCGPDFContextTitle as String: title,
-            kCGPDFContextAuthor as String: author,
-            kCGPDFContextSubject as String: subject,
-            kCGPDFContextKeywords as String: keywords
-            // `creationDate` isn't usually supported here but could be embedded elsewhere if needed
-        ]
-    }
+///Too store and search document files, and subfiles.
+protocol DocumentCategory {
+    var title: String { get }
+    func loadDocuments() -> [String]
 }
 
 
 
 // MARK: - Main Document Types Enum
-enum DocTypeEnum: String, CaseIterable { //Name change? 
-    case estimate, invoice, image, financial, legal, personalLegal
-
+enum DocTypeEnum: String, CaseIterable {
+    
+    case estimate
+    case invoice
+    case image
+    case financial
+    case legal
+    case personalLegal
+    
     func loadDocuments() -> [String] {
         switch self {
         case .estimate:
-            return EstimateModel.generateMock().sections.map { $0.name }
+            return ["Estimate1.pdf", "Estimate2.pdf"]
         case .invoice:
-            return InvoiceModel.generateMock().sections.map { $0.name }
+            return ["Invoice1.pdf", "Invoice2.pdf"]
         case .image:
-            return ImageCategory.allCases.flatMap { $0.loadDocuments() }
+            // Instead of returning actual files, return ImageCategories first
+            return ImageCategory.allCases.map { $0.rawValue.capitalized }
         case .financial:
-            return FinancialType.allCases.flatMap { $0.loadDocuments() }
+            return FinancialCatagory.allCases.map { $0.rawValue.capitalized }
         case .legal:
-            return LegalType.allCases.flatMap { $0.loadDocuments() }
+            return LegalCatagory.allCases.map { $0.rawValue.capitalized }
         case .personalLegal:
-            return LegalPersonalType.allCases.flatMap { $0.loadDocuments() }
+            return LegalPersonalCatagory.allCases.map { $0.rawValue.capitalized }
         }
     }
-}
-
-
-// MARK: - Image Document Type & Subcategories
-struct ImageModel: Identifiable {
-    let id: UUID
-    let title: String
-    let category: ImageCategory
-    let imageName: String // File name or reference
-    let dateAdded: Date
-}
-
-enum ImageCategory: String, CaseIterable {
-    case receipts, licenses, awards, rewards, events, jobs, reports, signatures
-
-    func loadDocuments() -> [String] {
+    
+    /// Returns whether this DocTypeEnum has subcategories
+    var hasSubcategories: Bool {
         switch self {
-        case .receipts: return ["Receipt1.jpg", "Receipt2.jpg"]
-        case .licenses: return ["License1.jpg", "License2.jpg"]
-        case .awards: return ["Award1.jpg", "Award2.jpg"]
-        case .rewards: return ["Reward1.jpg", "Reward2.jpg"]
-        case .events: return ["Event1.jpg", "Event2.jpg"]
-        case .jobs: return ["Job1.jpg", "Job2.jpg"]
-        case .reports: return ["Report1.jpg", "Report2.jpg"]
-        case .signatures: return ["Signature1.png", "Signature2.png"]
+        case .image:
+            return true
+        case .financial:
+            return true
+        case .legal:
+            return true
+        case .personalLegal:
+            return true
+        default:
+            return false
         }
     }
 }
+
+
+
+
 
 // MARK: - Financial Document Subcategories
-enum FinancialType: String, CaseIterable {
-    case bankStatement = "Bank Statement", financialReport = "Financial Report", cashFlowStatement = "Cash Flow Statement"
-    case balanceSheet = "Balance Sheet", incomeStatement = "Income Statement", taxes, payroll, receipts
-    case properties, vehicles, cards, contracts, insurances, businessPlan = "Business Plan"
-    case shareholdersPartnerships = "Shareholders Partnerships", investments, charitableContributions = "Charitable Contributions"
-
+enum FinancialCatagory: String, CaseIterable {
+    
+    case bankStatement, financialReport, cashFlowStatement, balanceSheet, incomeStatement, taxes, payroll, receipts, properties, vehicles, cards, contracts, insurances, businessPlan, shareholdersPartnerships, investments, charitableContributions
+    
     func loadDocuments() -> [String] {
-        return [self.rawValue + "1.pdf", self.rawValue + "2.pdf"]
+        switch self {
+            
+        case .bankStatement: return ["BankStatement1.pdf", "BankStatement2.pdf"]
+        case .financialReport: return ["FinancialReport.pdf", "FinancialReport2.pdf"]
+        case .cashFlowStatement: return ["cashFlowStatement.pdf", "cashFlowStatement2.pdf"]
+        case .balanceSheet: return ["BalanceSheet.pdf", "BalanceSheet2.pdf"]
+        case .incomeStatement: return ["IncomeStatement.pdf", "IncomeStatement2.pdf"]
+        case .taxes: return ["Taxes.pdf", "Taxes2.pdf"]
+        case .payroll: return ["Payroll.pdf", "Payroll2.pdf"]
+        case .receipts: return ["Receipts.pdf", "Receipts2.pdf"]
+        case .properties: return ["Properties.pdf", "Properties2.pdf"]
+        case .vehicles: return ["Vehicles.pdf", "Vehicles2.pdf"]
+        case .cards: return ["Cards.pdf", "Cards2.pdf"]
+        case .contracts: return ["Contracts.pdf", "Contracts2.pdf"]
+        case .insurances: return ["Insurances.pdf", "Insurances2.pdf"]
+        case .businessPlan: return ["BusinessPlan.pdf", "BusinessPlan2.pdf"]
+        case .shareholdersPartnerships: return ["ShareholdersPartnerships.pdf", "ShareholdersPartnerships2.pdf"]
+        case .investments: return ["1nvestments.pdf", "Investments2.pdf"]
+        case .charitableContributions: return ["CharitableContributions.pdf", "CharitableContributions2.pdf"]
+            
+        }
     }
 }
 
 // MARK: - Legal Document Subcategories
-enum LegalType: String, CaseIterable {
-    case policies, termsAndConditions = "Terms and Conditions", privacyPolicy = "Privacy Policy"
-    case legalAgreement = "Legal Agreement", businessRegistration = "Business Registration"
-    case businessLicense = "Business License", naics = "NAICS"
+enum LegalCatagory: String, CaseIterable {
+    
+    case policies, termsAndConditions, privacyPolicy, legalAgreement, businessRegistration, businessLicense, naics
 
     func loadDocuments() -> [String] {
-        return [self.rawValue + "1.pdf", self.rawValue + "2.pdf"]
+        switch self {
+            
+        case .policies: return []
+        case .termsAndConditions: return []
+        case .privacyPolicy: return []
+        case .legalAgreement: return []
+        case .businessRegistration: return []
+        case .businessLicense: return []
+        case .naics: return []
+            
+        }
     }
 }
 
 // MARK: - Personal Legal Document Subcategories
-enum LegalPersonalType: String, CaseIterable {
-    case will, trust, estate, powerOfAttorney = "Power of Attorney", livingWill = "Living Will"
+enum LegalPersonalCatagory: String, CaseIterable {
+    
+    case will, trust, estate, powerOfAttorney, livingWill
 
     func loadDocuments() -> [String] {
-        return [self.rawValue + "1.pdf", self.rawValue + "2.pdf"]
+        
+        switch self {
+        case .will: return []
+        case .trust: return []
+        case .estate: return []
+        case .powerOfAttorney: return []
+        case .livingWill: return []
+            
+        }
     }
 }
+

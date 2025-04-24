@@ -34,7 +34,7 @@ class DocumentDefaults {
     // You need to pass the DocumentManager instance here
     func userSelectedDocType(docType: DocTypeEnum, docManager: DocumentManager) {
         // Now you can safely update the `selectedDocType` in DocumentManager
-        docManager.selectedDocType = docType
+        docManager.documentCatagory = docType
     }
     
 }

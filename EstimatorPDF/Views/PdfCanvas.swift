@@ -1,87 +1,108 @@
 import SwiftUI
 import PDFKit
 
-struct PdfCanvas: View {
 
+struct PdfCanvas: View {
+    
     @EnvironmentObject var docManager: DocumentManager
     @State private var showDocList = false
-
+    @State var selectedMainTypeWithSubmenu: DocTypeEnum?
+    
+    
     var body: some View {
+        
         ZStack {
-            // Attempt to load PDF data (mocked for now from finalNotes)
-            if let pdfData = generatePDFData(from: docManager.currentDocument!)
-
-            {
-                PDFPreviewView(pdfData: pdfData)
-                    .ignoresSafeArea()
-            } else {
-                Text("Unable to load PDF")
-                    .foregroundColor(.red)
-                    .font(.headline)
-            }
-
-
+            
             VStack {
+                
                 HStack {
+                    
                     Spacer()
-                    Image(systemName: "list.triangle")
-                        .font(.system(size: 30))
-                        .foregroundColor(.gray)
-                        .padding()
-                        .onTapGesture {
-                            showDocList.toggle()
-                        }
-                }
-                Spacer()
-            }
-
-            if showDocList {
-                VStack(spacing: 0) {
-                    Text("Select a Document")
-                        .font(.headline)
-                        .padding()
-
-                    List(docManager.getMainMenuOptions(), id: \.self) { docOption in
-                        Text(docOption)
-                            .onTapGesture {
-                                // Assuming the docOption is something like "Estimate"
-                                if docOption.lowercased().contains("estimate") {
-                                    docManager.currentDocument = EstimateModel.generateMock()
-                                } else if docOption.lowercased().contains("invoice") {
-                                    docManager.currentDocument = InvoiceModel.generateMock() as! any BaseDocument
+                    
+                    
+                    Menu {
+                        ForEach(docManager.getMainMenuOptions(), id: \.self) { docOption in
+                            Button(action: {
+                                if let docType = DocTypeEnum(rawValue: docOption.lowercased()) {
+                                    docManager.documentCatagory = docType
+                                    docManager.selectDocument(named: docOption)
                                 }
-                                showDocList = false
+                            }) {
+                                Text(docOption)
                             }
-                    }
-                    .frame(maxHeight: 300)
-                    .listStyle(PlainListStyle())
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 5)
-                }
-                .padding()
-                .background(
-                    Color.black.opacity(0.5)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            showDocList = false
                         }
-                )
+                    } label: {
+                        Image(systemName: "list.bullet")
+                            .font(.system(size: 24))
+                            .foregroundColor(.gray)
+                            .padding()
+                    }
+                }
+                
+                
+                Spacer()
+                
+                
+                DocumentDisplayView()
+                    .padding()
+                
+                
+                Button(action: saveAsPDF) {
+                    Text("Save as PDF")
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
             }
         }
     }
+    
+    
+    private func saveAsPDF() {
+        
+        let pageSize = CGSize(width: 595.2, height: 841.8) // A4 size
 
-    // Placeholder PDF generation method
-    func generatePDFData(from document: BaseDocument) -> Data? {
-        if let estimate = document as? EstimateModel {
-            print("Generating PDF for Estimate: \(estimate.title)")
-            return Data() // Replace with actual PDF generation logic
+        let pdfRenderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize))
+
+        let data = pdfRenderer.pdfData { context in
+            context.beginPage()
+
+            let hostingController = UIHostingController(rootView: DocumentDisplayView().environmentObject(docManager))
+            let view = hostingController.view!
+            view.frame = CGRect(origin: .zero, size: pageSize)
+            view.backgroundColor = .white
+
+            let renderer = UIGraphicsImageRenderer(size: pageSize)
+            let image = renderer.image { _ in
+                view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
+            }
+
+            image.draw(in: CGRect(origin: .zero, size: pageSize))
         }
-        return nil
+
+        if let savedURL = docManager.savePDFData(data: data) {
+            print("✅ PDF successfully saved at: \(savedURL.path)")
+
+            // Optionally present the system preview or sharing options
+            let activityVC = UIActivityViewController(activityItems: [savedURL], applicationActivities: nil)
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }),
+               let rootVC = keyWindow.rootViewController {
+                rootVC.present(activityVC, animated: true)
+            }
+
+        } else {
+            print("❌ Failed to save PDF")
+        }
     }
+
 }
+    
 
 #Preview {
     PdfCanvas()
         .environmentObject(DocumentManager())
 }
+

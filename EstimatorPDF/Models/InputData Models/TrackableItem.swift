@@ -7,34 +7,36 @@
 
 import Foundation
 
-struct TrackableItem: Hashable, Equatable {
+struct TrackableItem: Identifiable, Hashable, Equatable {
+    
     let id: UUID
     let title: String
     let description: String
     var quantity: Int = 1
     var unitPrice: Double
-    var tax: Double
+    var taxRate: Double  // as a percentage like 13.0 for 13%
+    
+    // Subtotal: just price × quantity
+    var subtotal: Double {
+        return Double(quantity) * unitPrice
+    }
 
-    // Total Price for the Item
+    // Tax for this item: subtotal × taxRate
+    var taxAmount: Double {
+        return subtotal * (taxRate / 100)
+    }
+
+    // Total price for the item (subtotal + tax)
     var totalPrice: Double {
-        guard unitPrice > 0, quantity > 0 else { return 0 }
-        let taxAmount = unitPrice * (tax / 100)
-        return Double(quantity) * (unitPrice + taxAmount)
+        return subtotal + taxAmount
     }
 
-    // Total Tax for the Item
-    var totalTax: Double {
-        guard unitPrice > 0, quantity > 0 else { return 0 }
-        return Double(quantity) * (unitPrice * (tax / 100))
-    }
-
-    // Equatable implementation based on the `id`
     static func ==(lhs: TrackableItem, rhs: TrackableItem) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
-// To add 'CustomerItem' from the CustomerModel.swift file (as a trackable item)
+// CustomerItem initializer stays same
 extension TrackableItem {
     init(from customerItem: CustomerItem, unitPrice: Double = 0.0, taxRate: Double = 0.0) {
         self.id = customerItem.id
@@ -42,7 +44,22 @@ extension TrackableItem {
         self.description = customerItem.description
         self.quantity = 1
         self.unitPrice = unitPrice
-        self.tax = taxRate
+        self.taxRate = taxRate
     }
 }
+
+extension Array where Element == TrackableItem {
+    var subtotal: Double {
+        self.reduce(0) { $0 + $1.subtotal }
+    }
+
+    var totalTax: Double {
+        self.reduce(0) { $0 + $1.taxAmount }
+    }
+
+    var grandTotal: Double {
+        subtotal + totalTax
+    }
+}
+
 
