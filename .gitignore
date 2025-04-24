@@ -1,0 +1,52 @@
+# macOS-specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+*.xcworkspace
+
+# Build artifacts
+build/
+*.o
+*.LinkFileList
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods (if ever used)
+Pods/
+
+# Carthage (if ever used)
+Carthage/Build/
+
+# Fastlane (if you automate builds)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+
+# Local environment & keys
+.env
+*.key
+*.pem
+*.crt
+
+# Misnamed SSH key files from earlier mistake
+eval "$(ssh-agent -s)"
+eval "$(ssh-agent -s)".pub
+
+# User/project config
+*.xcconfig
+*.xcodeproj/project.xcworkspace/xcshareddata/
+*.xcodeproj/xcuserdata/
